@@ -31,11 +31,12 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/auth-next'
   ],
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
-    baseURL: 'http://localhost:4000', // Used as fallback if no runtime config is provided
+    baseURL: process.env.BASE_URL || 'http://localhost:8081', // Used as fallback if no runtime config is provided
   },
 
   publicRuntimeConfig: {
@@ -46,7 +47,7 @@ export default {
 
   privateRuntimeConfig: {
     axios: {
-      baseURL: process.env.BASE_URL
+      baseURL: process.env.BASE_URL || 'http://localhost:8081'
     }
   },
 
@@ -54,25 +55,25 @@ export default {
   build: {},
 
   auth: {
+    redirect: {
+    login: '/login',
+    logout: '/logout',
+    callback: '/login',
+    home: '/'
+  },
     strategies: {
-      local: {
+      cookie: {
         endpoints: {
-          login: { url: '/api/auth/login', method: 'post', propertyName: 'token' },
-          logout: { url: '/api/auth/logout', method: 'post' },
-          user: { url: '/api/auth/user', method: 'get', propertyName: 'user' }
+          login: { url: '/login', method: 'post', },
+          register: { url: '/register', method: 'post', },
+          logout: { url: '/logout', method: 'post' },
+          user: { url: '/user', method: 'get', propertyName: false  }
         },
-        cookie: {
-          prefix: 'auth.',
-          options: {
-            path: '/'
-          }
-
-        },
-        tokenRequired: false,
-        tokenType: false,
-        autoFetchUser: false,
 
       }
     }
-  }
+  },
+  router: {
+  middleware: ['auth']
+}
 }

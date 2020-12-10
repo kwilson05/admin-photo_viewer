@@ -1,9 +1,9 @@
 <template>
   <div>
-    <form @submit="userLogin">
+    <form @submit.prevent="userLogin">
       <div>
-        <label>Username</label>
-        <input type="text" v-model="login.username" />
+        <label>Email</label>
+        <input type="text" v-model="login.email" />
       </div>
       <div>
         <label>Password</label>
@@ -21,20 +21,22 @@ export default {
   data() {
     return {
       login: {
-        username: '',
+        email: '',
         password: '',
       },
     };
   },
   methods: {
-    /* userLogin() {
+    async userLogin() {
       try {
-        //let response = await this.$auth.loginWith('local', { data: this.login })
-        //console.log(response)
+        const response = await this.$auth.loginWith('local', {
+          data: this.login,
+        });
+        console.log(response);
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
-    }, */
+    },
   },
 };
 </script>
