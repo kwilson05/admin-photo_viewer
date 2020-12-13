@@ -55,19 +55,17 @@ export default {
   build: {},
 
   auth: {
-    redirect: {
-    login: '/login',
-    logout: '/logout',
-    callback: '/login',
-    home: '/'
-  },
     strategies: {
-      cookie: {
+       local:{
+          token:{
+         property: 'token',
+         type: false
+       },
         endpoints: {
           login: { url: '/login', method: 'post', },
           register: { url: '/register', method: 'post', },
           logout: { url: '/logout', method: 'post' },
-          user: { url: '/user', method: 'get', propertyName: false  }
+          user: { url: '/user', method: 'get', property: 'user' }
         },
 
       }

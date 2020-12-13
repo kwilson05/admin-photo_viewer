@@ -12,6 +12,10 @@
       <div>
         <button type="submit">Submit</button>
       </div>
+
+      <div v-if="$auth.loggedIn">
+        <h1>Hello Mate</h1>
+      </div>
     </form>
   </div>
 </template>
@@ -27,12 +31,11 @@ export default {
     };
   },
   methods: {
-    async userLogin() {
+    userLogin() {
       try {
-        const response = await this.$auth.loginWith('local', {
+        this.$auth.loginWith('local', {
           data: this.login,
         });
-        console.log(response);
       } catch (err) {
         console.log(err);
       }
