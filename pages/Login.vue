@@ -1,22 +1,34 @@
 <template>
-  <div>
-    <form @submit.prevent="userLogin">
-      <div>
-        <label>Email</label>
-        <input type="text" v-model="login.email" />
-      </div>
-      <div>
-        <label>Password</label>
-        <input type="text" v-model="login.password" />
-      </div>
-      <div>
-        <button type="submit">Submit</button>
-      </div>
+  <div class="flex justify-center items-center h-screen">
+    <div class="Login-dialog">
+      <form class="w-full" @submit.prevent="userLogin">
+        <div>
+          <label class="Login_field-label">Email</label>
 
-      <div v-if="$auth.loggedIn">
-        <h1>Hello Mate</h1>
-      </div>
-    </form>
+          <input
+            placeholder="Enter an email"
+            class="Login_field"
+            type="text"
+            v-model="login.email"
+          />
+        </div>
+        <div>
+          <label class="Login_field-label">Password</label>
+
+          <input
+            class="Login_field"
+            placeholder="Enter a password"
+            type="password"
+            v-model="login.password"
+          />
+        </div>
+        <div class="mt-4">
+          <button @click="userLogin" class="Login_btn" type="button">
+            Login
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -31,11 +43,12 @@ export default {
     };
   },
   methods: {
-    userLogin() {
+    async userLogin() {
       try {
-        this.$auth.loginWith('local', {
+        await this.$auth.loginWith('local', {
           data: this.login,
         });
+        this.$router.push('/');
       } catch (err) {
         console.log(err);
       }
@@ -43,3 +56,41 @@ export default {
   },
 };
 </script>
+
+<style>
+.Login_btn {
+  border: 1px solid;
+  user-select: none;
+  cursor: pointer;
+  background-color: green;
+  font-size: 16px;
+  border-radius: 8px;
+  padding: 5px 16px;
+  color: white;
+}
+.Login-dialog {
+  background-color: rgb(230, 230, 230);
+  width: 400px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.Login_field {
+  width: 100%;
+  border-radius: 5px;
+  background-color: #e8f0fe;
+  height: 35px;
+  font-size: 16px;
+  border: none;
+  margin: 2px;
+  padding: 5px;
+}
+.Login_field-label {
+  display: block;
+  font-weight: bold;
+}
+</style>

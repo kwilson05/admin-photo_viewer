@@ -55,6 +55,7 @@ export default {
   build: {},
 
   auth: {
+      localStorage: false,
     strategies: {
        local:{
           token:{
@@ -70,6 +71,7 @@ export default {
 
       }
     }
+
   },
   router: {
   middleware: ['auth']
