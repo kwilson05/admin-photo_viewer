@@ -1,6 +1,12 @@
 <template>
   <div class="container">
     <div>
+      <div>
+        <label class="btn" for="add-photos"
+          >Add Photos
+          <input id="add-photos" :change="alerts" type="file" v-show="false" />
+        </label>
+      </div>
       <file-table />
     </div>
   </div>
@@ -10,6 +16,12 @@
 import FileTable from '~/components/FileTable.vue';
 export default {
   components: { FileTable },
+  methods: {
+    alerts() {
+      console.log('h');
+      alert('Hello world');
+    },
+  },
 };
 </script>
 
@@ -48,5 +60,15 @@ export default {
 
 .links {
   padding-top: 15px;
+}
+
+.btn {
+  border: 1px solid;
+  padding: 0px 10px;
+  background-color: turquoise;
+  border-radius: 8px;
+  width: 100px;
+  display: block;
+  color: whitesmoke;
 }
 </style>
