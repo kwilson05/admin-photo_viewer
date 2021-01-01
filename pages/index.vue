@@ -2,24 +2,52 @@
   <div class="container">
     <div>
       <div>
-        <label class="btn" for="add-photos"
-          >Add Photos
-          <input id="add-photos" :change="alerts" type="file" v-show="false" />
+        <label class="btn" for="newphoto">
+          Add Photos
+          <input
+            v-on:change="addPhoto"
+            v-show="false"
+            type="file"
+            id="newphoto"
+            accept="image/*"
+          />
         </label>
       </div>
-      <file-table />
+
+      <AddImageDialog
+        add-image-dialog
+        v-show="addingNewImage"
+        :image="newImage"
+      />
+
+      <FileTable />
     </div>
   </div>
 </template>
 
 <script>
 import FileTable from '~/components/FileTable.vue';
+import AddImageDialog from '~/components/AddImageDialog.vue';
 export default {
-  components: { FileTable },
+  components: { FileTable, AddImageDialog },
+  computed: {
+    addingNewImage() {
+      return this.newImage.src.trim() !== '';
+    },
+  },
+  data() {
+    return {
+      newImage: {
+        src: '',
+      },
+    };
+  },
   methods: {
-    alerts() {
-      console.log('h');
-      alert('Hello world');
+    addPhoto(event) {
+      const imageFiles = event.target.files;
+      if (imageFiles && imageFiles.length > 0) {
+        this.newImage.src = URL.createObjectURL(imageFiles[0]);
+      }
     },
   },
 };
@@ -70,5 +98,10 @@ export default {
   width: 100px;
   display: block;
   color: whitesmoke;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: green;
 }
 </style>

@@ -26,7 +26,12 @@
           />
         </div>
         <div class="mt-4">
-          <button @click="userLogin" class="Login_btn" type="button">
+          <button
+            @keydown.enter="userLogin"
+            @click="userLogin"
+            class="Login_btn"
+            type="button"
+          >
             Login
           </button>
         </div>
