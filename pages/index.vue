@@ -1,27 +1,28 @@
 <template>
-  <div class="container">
-    <div>
+  <div>
+    <div class="container">
       <div>
-        <label class="btn" for="newphoto">
-          Add Photos
-          <input
-            v-on:change="addPhoto"
-            v-show="false"
-            type="file"
-            id="newphoto"
-            accept="image/*"
-          />
-        </label>
+        <div>
+          <label class="btn" for="newphoto">
+            Add Photos
+            <input
+              v-on:change="addPhoto"
+              v-show="false"
+              type="file"
+              id="newphoto"
+              accept="image/*"
+            />
+          </label>
+        </div>
+
+        <FileTable />
       </div>
-
-      <AddImageDialog
-        add-image-dialog
-        v-show="addingNewImage"
-        :image="newImage"
-      />
-
-      <FileTable />
     </div>
+    <AddImageDialog
+      add-image-dialog
+      v-show="addingNewImage"
+      :image="newImage"
+    />
   </div>
 </template>
 
@@ -48,17 +49,14 @@ export default {
       if (imageFiles && imageFiles.length > 0) {
         this.newImage.src = URL.createObjectURL(imageFiles[0]);
       }
+      event.target.value = '';
+      event.target.files = null;
     },
   },
 };
 </script>
 
 <style>
-/* Sample `apply` at-rules with Tailwind CSS
-.container {
-@apply min-h-screen flex justify-center items-center text-center mx-auto;
-}
-*/
 .container {
   margin: 0 auto;
   min-height: 100vh;
@@ -88,20 +86,5 @@ export default {
 
 .links {
   padding-top: 15px;
-}
-
-.btn {
-  border: 1px solid;
-  padding: 0px 10px;
-  background-color: turquoise;
-  border-radius: 8px;
-  width: 100px;
-  display: block;
-  color: whitesmoke;
-  cursor: pointer;
-}
-
-.btn:hover {
-  background-color: green;
 }
 </style>
