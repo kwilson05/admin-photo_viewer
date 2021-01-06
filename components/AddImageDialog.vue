@@ -1,12 +1,13 @@
 <template>
-  <dialog class="Add_Image-Dialog">
-    <img class="Add_Image-previewImage" :src="image.src" />
+  <dialog ref="addPhotoDialog" class="Add_Image-Dialog">
+    <img class="Add_Image-previewImage" :src="imageUrl" />
 
     <form>
       <div class="Add_Image-form">
         <div class="Add_Image-fieldContainer">
           <label for="title" class="Add_Image-fieldLabel"> Title</label>
           <input
+            v-model="imageDetails.title"
             placeholder="What's the picture's title?"
             id="title"
             type="text"
@@ -18,6 +19,7 @@
             >Descrption</label
           >
           <input
+            v-model="imageDetails.description"
             placeholder="Describe the picture's setting"
             id="description"
             type="text"
@@ -30,15 +32,20 @@
           >
           <flat-pickr
             placeholder="When was the photo taken?"
-            :config="config"
+            :config="flatpickrConfig"
             class="Add_Image-field"
+            v-model="imageDetails.photoTakenDate"
           >
           </flat-pickr>
         </div>
 
         <div class="flex">
-          <button class="btn mr-8">Upload</button>
-          <button class="btn-secondary">Cancel</button>
+          <button type="button" class="btn mr-8" @click="savePhoto">
+            Upload
+          </button>
+          <button type="button" @click="closeDialog" class="btn-secondary">
+            Cancel
+          </button>
         </div>
       </div>
     </form>
@@ -49,31 +56,49 @@
 import flatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 export default {
-  props: ['image'],
+  props: ['image', 'imageUrl'],
   components: { flatPickr },
   data() {
     return {
-      config: {
+      flatpickrConfig: {
         altFormat: 'M j, Y',
         altInput: true,
         dateFormat: 'Y-m-d',
         static: true,
+      },
+      imageDetails: {
+        title: '',
+        description: '',
+        photoTakeDate: '',
       },
     };
   },
   watch: {
     image: {
       handler() {
-        if (this.image && this.image.src.trim() !== '') {
-          document.querySelector('dialog').showModal();
+        if (this.image && this.image.name) {
+          this.$refs.addPhotoDialog.showModal();
         }
       },
       deep: true,
     },
   },
   methods: {
-    showDialog() {
-      document.querySelector('dialog').showModal();
+    closeDialog() {
+      this.$refs.addPhotoDialog.close();
+    },
+    savePhoto() {
+      const multiPartApi = this.$axios.create({
+        headers: {
+          'Content-Type': 'multipart/form-data; boundary=--XXX--;',
+        },
+      });
+      const formData = new FormData();
+      formData.append('imageFile', this.image, this.image.name);
+      formData.append('imageDetails', this.imageDetails);
+      multiPartApi.post('/image', formData);
+
+      this.closeDialog();
     },
   },
 };

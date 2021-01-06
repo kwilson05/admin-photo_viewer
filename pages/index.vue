@@ -18,11 +18,7 @@
         <FileTable />
       </div>
     </div>
-    <AddImageDialog
-      add-image-dialog
-      v-show="addingNewImage"
-      :image="newImage"
-    />
+    <AddImageDialog :image="newImage" :imageUrl="newImageUrl" />
   </div>
 </template>
 
@@ -31,23 +27,18 @@ import FileTable from '~/components/FileTable.vue';
 import AddImageDialog from '~/components/AddImageDialog.vue';
 export default {
   components: { FileTable, AddImageDialog },
-  computed: {
-    addingNewImage() {
-      return this.newImage.src.trim() !== '';
-    },
-  },
   data() {
     return {
-      newImage: {
-        src: '',
-      },
+      newImage: {},
+      newImageUrl: '',
     };
   },
   methods: {
     addPhoto(event) {
       const imageFiles = event.target.files;
       if (imageFiles && imageFiles.length > 0) {
-        this.newImage.src = URL.createObjectURL(imageFiles[0]);
+        this.newImageUrl = URL.createObjectURL(imageFiles[0]);
+        this.newImage = imageFiles[0];
       }
       event.target.value = '';
       event.target.files = null;
