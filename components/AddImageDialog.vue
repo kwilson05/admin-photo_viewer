@@ -95,7 +95,7 @@ export default {
       });
       const formData = new FormData();
       formData.append('imageFile', this.image, this.image.name);
-      formData.append('imageDetails', this.imageDetails);
+      formData.append('imageDetails', JSON.stringify(this.imageDetails));
       multiPartApi.post('/image', formData);
 
       this.closeDialog();
