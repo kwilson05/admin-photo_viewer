@@ -63,13 +63,12 @@ export default {
       flatpickrConfig: {
         altFormat: 'M j, Y',
         altInput: true,
-        dateFormat: 'Y-m-d',
         static: true,
       },
       imageDetails: {
         title: '',
         description: '',
-        photoTakeDate: '',
+        photoTakenDate: '',
       },
     };
   },
