@@ -6,19 +6,24 @@
           <label class="btn" for="newphoto">
             Add Photos
             <input
-              v-on:change="addPhoto"
               v-show="false"
-              type="file"
               id="newphoto"
+              type="file"
               accept="image/*"
+              @change="addPhoto"
             />
           </label>
         </div>
 
-        <FileTable />
+        <h2 v-show="noFiles" class="mt-4">No files here..Please add some</h2>
+        <FileTable v-show="!noFiles" class="mt-4" :files="files" />
       </div>
     </div>
-    <AddImageDialog :image="newImage" :imageUrl="newImageUrl" />
+    <AddImageDialog
+      @addedImage="addImage"
+      :image="newImage"
+      :imageUrl="newImageUrl"
+    />
   </div>
 </template>
 
@@ -31,7 +36,16 @@ export default {
     return {
       newImage: {},
       newImageUrl: '',
+      files: [],
     };
+  },
+  computed: {
+    noFiles() {
+      return this.files.length === 0;
+    },
+  },
+  async created() {
+    this.files.push(...(await this.$axios.get('/image')).data);
   },
   methods: {
     addPhoto(event) {
@@ -42,6 +56,9 @@ export default {
       }
       event.target.value = '';
       event.target.files = null;
+    },
+    addImage(file) {
+      this.files.push(file);
     },
   },
 };

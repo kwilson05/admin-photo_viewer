@@ -39,14 +39,27 @@
           </flat-pickr>
         </div>
 
-        <div class="flex">
-          <button type="button" class="btn mr-8" @click="savePhoto">
+        <nav class="flex">
+          <button
+            ref="addButton"
+            type="button"
+            class="btn mr-8"
+            @click="savePhoto"
+          >
             Upload
           </button>
-          <button type="button" @click="closeDialog" class="btn-secondary">
+          <button
+            ref="cancelButton"
+            type="button"
+            @click="closeDialog"
+            class="btn-secondary"
+          >
             Cancel
           </button>
-        </div>
+        </nav>
+      </div>
+      <div>
+        <h2 v-show="savingPhoto">Saving Photo...</h2>
       </div>
     </form>
   </dialog>
@@ -70,6 +83,7 @@ export default {
         description: '',
         photoTakenDate: '',
       },
+      savingPhoto: false,
     };
   },
   watch: {
@@ -86,7 +100,11 @@ export default {
     closeDialog() {
       this.$refs.addPhotoDialog.close();
     },
-    savePhoto() {
+    async savePhoto() {
+      this.$refs.addButton.disabled = true;
+      this.$refs.cancelButton.disabled = true;
+      this.savingPhoto = true;
+
       const multiPartApi = this.$axios.create({
         headers: {
           'Content-Type': 'multipart/form-data; boundary=--XXX--;',
@@ -95,7 +113,9 @@ export default {
       const formData = new FormData();
       formData.append('imageFile', this.image, this.image.name);
       formData.append('imageDetails', JSON.stringify(this.imageDetails));
-      multiPartApi.post('/image', formData);
+      const newImage = (await multiPartApi.post('/image', formData)).data;
+
+      this.$emit('addedImage', newImage);
 
       this.closeDialog();
     },

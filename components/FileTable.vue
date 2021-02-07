@@ -33,7 +33,7 @@
 
 <script>
 export default {
-  props: ['data'],
+  props: ['files'],
   computed: {
     rowCount() {
       return this.files.length;
@@ -51,43 +51,8 @@ export default {
         'Shot Date',
         'File Create Date',
       ],
-      files: [
-        {
-          id: 1,
-          title: 'Hello world',
-          filePath: 'ige.jpg',
-          description: 'Sample image',
-          photoTakenDate: 'Monday, Jan 1, 2012',
-          createdDate: 'Tuesday, December 2nd, 2020',
-        },
-        {
-          id: 2,
-          title: 'Hello world',
-          filePath: 'e.jpg',
-          description: 'Sample image',
-          photoTakenDate: 'Monday, Jan 1, 2012',
-          createdDate: 'Tuesday, December 2nd, 2020',
-        },
-        {
-          id: 3,
-          title: 'Hello world',
-          filePath: 'i.jpg',
-          description: 'Sample image',
-          photoTakenDate: 'Monday, Jan 1, 2012',
-          createdDate: 'Tuesday, December 2nd, 2020',
-        },
-        {
-          id: 4,
-          title: 'Hello world',
-          filePath: 'ie.jpg',
-          description: 'Sample image',
-          photoTakenDate: 'Monday, Jan 1, 2012',
-          createdDate: 'Tuesday, December 2nd, 2020',
-        },
-      ],
     };
   },
-  mounted() {},
 };
 </script>
 <style>
