@@ -21,10 +21,10 @@
           {{ file.description }}
         </td>
         <td class="tabledata">
-          {{ file.createdDate }}
+          {{ formatDate(file.photoTakenDate) }}
         </td>
         <td class="tabledata">
-          {{ file.photoTakenDate }}
+          {{ formatDate(file.createdDate) }}
         </td>
       </tr>
     </tbody>
@@ -32,8 +32,10 @@
 </template>
 
 <script>
+import DateUtil from '../mixins/date';
 export default {
   props: ['files'],
+  mixins: [DateUtil],
   computed: {
     rowCount() {
       return this.files.length;
@@ -53,6 +55,7 @@ export default {
       ],
     };
   },
+  methods() {},
 };
 </script>
 <style>
