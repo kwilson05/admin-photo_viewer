@@ -66,18 +66,13 @@
 </template>
 
 <script>
-import flatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
+import DateUtil from '../mixins/date';
 export default {
   props: ['image', 'imageUrl'],
-  components: { flatPickr },
+  mixins: [DateUtil],
   data() {
     return {
-      flatpickrConfig: {
-        altFormat: 'M j, Y',
-        altInput: true,
-        static: true,
-      },
       imageDetails: {
         title: '',
         description: '',

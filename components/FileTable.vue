@@ -10,10 +10,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="file in files" v-bind:key="file.filePath">
+      <nuxt-link
+        tag="tr"
+        v-for="file in files"
+        v-bind:key="file.filePath"
+        :to="{ name: 'image-id', params: { id: file.id } }"
+      >
         <td class="tabledata">
           {{ file.title }}
         </td>
+
         <td class="tabledata">
           {{ file.filePath }}
         </td>
@@ -26,7 +32,7 @@
         <td class="tabledata">
           {{ formatDate(file.createdDate) }}
         </td>
-      </tr>
+      </nuxt-link>
     </tbody>
   </table>
 </template>

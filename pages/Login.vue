@@ -59,7 +59,6 @@ export default {
         });
         this.$router.push('/');
       } catch (err) {
-        console.log(err);
         this.errorState = true;
       }
     },
