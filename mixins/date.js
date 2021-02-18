@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import flatPickr from 'vue-flatpickr-component';
+import 'flatpickr/dist/flatpickr.css';
 export default {
   components: { flatPickr },
   data() {
@@ -7,7 +8,7 @@ export default {
       flatpickrConfig: {
         altFormat: 'M j, Y',
         altInput: true,
-        static: true,
+        disableMobile: true,
       },
     };
   },

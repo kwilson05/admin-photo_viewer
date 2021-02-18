@@ -66,7 +66,6 @@
 </template>
 
 <script>
-import 'flatpickr/dist/flatpickr.css';
 import DateUtil from '../mixins/date';
 export default {
   props: ['image', 'imageUrl'],

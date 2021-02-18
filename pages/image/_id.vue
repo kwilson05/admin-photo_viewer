@@ -33,31 +33,17 @@
             :config="flatpickrConfig"
             class="Edit_Image-field"
             v-model="imageDetails.photoTakenDate"
+            name="date"
           >
           </flat-pickr>
         </div>
 
         <nav class="flex">
-          <button
-            ref="addButton"
-            type="button"
-            class="btn mr-8"
-            @click="savePhoto"
-          >
-            Save
-          </button>
-          <button
-            ref="cancelButton"
-            type="button"
-            @click="closeDialog"
-            class="btn-secondary"
-          >
+          <button ref="addButton" type="button" class="btn mr-8">Save</button>
+          <button ref="cancelButton" type="button" class="btn-secondary">
             Cancel
           </button>
         </nav>
-      </div>
-      <div>
-        <h2 v-show="savingPhoto">Saving Photo...</h2>
       </div>
     </form>
   </div>
@@ -75,7 +61,10 @@ export default {
       imageDetails: {},
     };
   },
-  async created() {},
+  async mounted() {
+    this.imageDetails = (await this.$axios.get(`/image/${this.id}`)).data;
+    console.log(this.imageDetails);
+  },
 };
 </script>
 <style>
