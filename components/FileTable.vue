@@ -2,6 +2,9 @@
   <table>
     <thead>
       <tr>
+        <th class="tableheader">
+          <input type="checkbox" id="selectAll" name="selectAll" />
+        </th>
         <th class="tableheader" v-for="key in columns" v-bind:key="key">
           <div>
             {{ key }}
@@ -16,6 +19,9 @@
         v-bind:key="file.filePath"
         :to="{ name: 'image-id', params: { id: file.id } }"
       >
+        <td class="tabledata">
+          <input type="checkbox" :id="file.id" :name="file.id" />
+        </td>
         <td class="tabledata">
           {{ file.title }}
         </td>
@@ -80,6 +86,7 @@ th.tableheader {
   border: 2px solid#EBECF3;
   padding: 10px;
   background-color: #f4f4f4;
+  border: none;
   font-weight: bold;
   font-size: 90%;
   user-select: none;
@@ -92,12 +99,7 @@ td.tabledata {
   padding: 5px;
   font-size: 90%;
   user-select: none;
-}
-
-tbody tr:nth-child(even) {
-  background-color: #f4f4f4;
-}
-tbody tr:nth-child(odd) {
-  background-color: #ffffff;
+  border: solid black;
+  border-width: 0px 0px 1px 0px;
 }
 </style>
