@@ -1,51 +1,69 @@
 <template>
-  <div rclass="Edit_Image-Container">
-    <form>
-      <div class="Edit_Image-form">
-        <div class="Edit_Image-fieldContainer">
-          <label for="title" class="Edit_Image-fieldLabel"> Title</label>
-          <input
-            v-model="imageDetails.title"
-            placeholder="What's the picture's title?"
-            id="title"
-            type="text"
-            class="Edit_Image-field"
-          />
-        </div>
-        <div class="Edit_Image-fieldContainer">
-          <label for="description" class="Edit_Image-fieldLabel"
-            >Descrption</label
-          >
-          <input
-            v-model="imageDetails.description"
-            placeholder="Describe the picture's setting"
-            id="description"
-            type="text"
-            class="Edit_Image-field"
-          />
-        </div>
-        <div class="Edit_Image-fieldContainer">
-          <label for="photoTakenDate" class="Edit_Image-fieldLabel"
-            >Photo Shot Date</label
-          >
-          <flat-pickr
-            placeholder="When was the photo taken?"
-            :config="flatpickrConfig"
-            class="Edit_Image-field"
-            v-model="imageDetails.photoTakenDate"
-            name="date"
-          >
-          </flat-pickr>
-        </div>
+  <div class="Edit_Image-Container">
+    <section class="Edit_Image-panel">
+      <form>
+        <div class="Edit_Image-form">
+          <div class="Edit_Image-fieldContainer">
+            <label for="title" class="Edit_Image-fieldLabel"> Title</label>
+            <input
+              v-model="imageDetails.title"
+              placeholder="What's the picture's title?"
+              id="title"
+              type="text"
+              class="Edit_Image-field"
+            />
+          </div>
+          <div class="Edit_Image-fieldContainer">
+            <label for="description" class="Edit_Image-fieldLabel"
+              >Descrption</label
+            >
+            <input
+              v-model="imageDetails.description"
+              placeholder="Describe the picture's setting"
+              id="description"
+              type="text"
+              class="Edit_Image-field"
+            />
+          </div>
+          <div class="Edit_Image-fieldContainer">
+            <label for="photoTakenDate" class="Edit_Image-fieldLabel"
+              >Photo Shot Date</label
+            >
+            <flat-pickr
+              placeholder="When was the photo taken?"
+              :config="flatpickrConfig"
+              class="Edit_Image-field"
+              v-model="imageDetails.photoTakenDate"
+              name="date"
+            >
+            </flat-pickr>
+          </div>
 
-        <nav class="flex">
-          <button ref="addButton" type="button" class="btn mr-8">Save</button>
-          <button ref="cancelButton" type="button" class="btn-secondary">
-            Cancel
-          </button>
-        </nav>
-      </div>
-    </form>
+          <nav class="flex justify-center">
+            <button
+              v-show="notSaving"
+              @click="saveChanges"
+              ref="saveButton"
+              type="button"
+              class="btn mr-8"
+            >
+              Save
+            </button>
+            <nuxt-link
+              v-show="notSaving"
+              tag="button"
+              :to="{ name: 'index' }"
+              ref="cancelButton"
+              type="button"
+              class="btn-secondary"
+            >
+              Cancel
+            </nuxt-link>
+            <h2 v-show="!notSaving">Saving....</h2>
+          </nav>
+        </div>
+      </form>
+    </section>
   </div>
 </template>
 <script>
@@ -59,11 +77,20 @@ export default {
   data() {
     return {
       imageDetails: {},
+      notSaving: true,
     };
   },
   async mounted() {
     this.imageDetails = (await this.$axios.get(`/image/${this.id}`)).data;
-    console.log(this.imageDetails);
+  },
+  methods: {
+    async saveChanges() {
+      this.notSaving = false;
+      await this.$axios.post(`/image/${this.id}`, {
+        imageDetails: this.imageDetails,
+      });
+      this.$router.push('/');
+    },
   },
 };
 </script>
@@ -75,6 +102,12 @@ export default {
   align-items: center;
 }
 
+.Edit_Image-panel {
+  border: 1px black solid;
+  box-shadow: 1px 1px #1025444d, -1px -1px #1025444d;
+  padding: 16px;
+}
+
 .Edit_Image-previewImage {
   max-width: 250px;
   max-height: 250px;
@@ -84,9 +117,6 @@ export default {
 .Edit_Image-form {
   display: flex;
   flex-direction: column;
-  padding-left: 72px;
-  padding-right: 16px;
-  margin-top: 16px;
 }
 .Edit_Image-fieldContainer {
   width: 75%;
