@@ -3,24 +3,31 @@
     <thead>
       <tr>
         <th class="tableheader">
-          <input type="checkbox" id="selectAll" name="selectAll" />
+          <input
+            @change="handleSelectAll"
+            v-model="selectedAllRows"
+            type="checkbox"
+            id="selectAll"
+            name="selectAll"
+          />
         </th>
         <th class="tableheader" v-for="key in columns" v-bind:key="key">
           <div>
             {{ key }}
           </div>
         </th>
+        <th class="tableheader"></th>
       </tr>
     </thead>
     <tbody>
-      <nuxt-link
-        tag="tr"
-        v-for="file in files"
-        v-bind:key="file.filePath"
-        :to="{ name: 'image-id', params: { id: file.id } }"
-      >
+      <tr v-for="file in files" v-bind:key="file.filePath">
         <td class="tabledata">
-          <input type="checkbox" :id="file.id" :name="file.id" />
+          <input
+            type="checkbox"
+            data-file="image"
+            :id="file.id"
+            :name="file.id"
+          />
         </td>
         <td class="tabledata">
           {{ file.title }}
@@ -38,7 +45,17 @@
         <td class="tabledata">
           {{ formatDate(file.createdDate) }}
         </td>
-      </nuxt-link>
+
+        <td class="tabledata">
+          <nuxt-link
+            tag="img"
+            :to="{ name: 'image-id', params: { id: file.id } }"
+            class="kebab"
+            src="/noun_Kebab Menu_659813.svg"
+          >
+          </nuxt-link>
+        </td>
+      </tr>
     </tbody>
   </table>
 </template>
@@ -65,12 +82,27 @@ export default {
         'Shot Date',
         'File Create Date',
       ],
+      selectedAllRows: false,
     };
   },
-  methods() {},
+  methods: {
+    handleSelectAll() {
+      const checkboxes = document.querySelectorAll('[data-file]');
+
+      for (const checkbox of checkboxes) {
+        checkbox.checked = this.selectedAllRows;
+      }
+    },
+  },
 };
 </script>
 <style>
+.kebab {
+  width: 100px;
+  height: 50px;
+  cursor: pointer;
+}
+
 table {
   table-layout: fixed;
 
@@ -93,7 +125,6 @@ th.tableheader {
 }
 
 td.tabledata {
-  cursor: pointer;
   letter-spacing: 1px;
   border: 2px solid#EBECF3;
   padding: 5px;
