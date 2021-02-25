@@ -10,36 +10,44 @@
               id="newphoto"
               type="file"
               accept="image/*"
-              @change="addPhoto"
+              @change="newImageFile"
             />
           </label>
         </div>
-
+        <h2 v-show="saving" class="mb-4 mt-4">Saving Image File......</h2>
         <h2 v-show="noFiles" class="mt-4">No files here..Please add some</h2>
         <FileTable v-show="!noFiles" class="mt-4" :files="files" />
       </div>
     </div>
-    <AddImageDialog
-      @addedImage="addImage"
-      :image="newImage"
-      :imageUrl="newImageUrl"
+    <CrudDialog
+      ref="crudDialog"
+      v-show="hasNewImage"
+      :imageDetails="imageDetails"
+      @save="saveImage"
     />
   </div>
 </template>
 
 <script>
 import FileTable from '~/components/FileTable.vue';
-import AddImageDialog from '~/components/AddImageDialog.vue';
+import CrudDialog from '~/components/CrudDialog.vue';
 export default {
-  components: { FileTable, AddImageDialog },
+  components: { FileTable, CrudDialog },
   data() {
     return {
-      newImage: {},
-      newImageUrl: '',
+      imageDetails: {},
+      imageFile: {},
       files: [],
+      saving: false,
     };
   },
   computed: {
+    hasNewImage() {
+      if (this.imageFile.name || this.imageDetails.description) {
+        return true;
+      }
+      return false;
+    },
     noFiles() {
       return this.files.length === 0;
     },
@@ -48,17 +56,47 @@ export default {
     this.files.push(...(await this.$axios.get('/image')).data);
   },
   methods: {
-    addPhoto(event) {
+    newImageFile(event) {
       const imageFiles = event.target.files;
       if (imageFiles && imageFiles.length > 0) {
-        this.newImageUrl = URL.createObjectURL(imageFiles[0]);
-        this.newImage = imageFiles[0];
+        this.imageDetails.url = URL.createObjectURL(imageFiles[0]);
+        this.imageFile = imageFiles[0];
       }
       event.target.value = '';
       event.target.files = null;
+      this.$refs.crudDialog.$refs.imageDialog.showModal();
     },
-    addImage(file) {
-      this.files.push(file);
+    async saveImage(newImageDetails) {
+      this.saving = true;
+      if (this.imageFile.name) {
+        await this.createImageFile(newImageDetails);
+      } else {
+        await this.editImageFile(newImageDetails);
+      }
+
+      this.imageDetails = {};
+      this.imageFile = {};
+      this.saving = false;
+    },
+    async createImageFile(newImageDetails) {
+      // No longer need url property
+      delete newImageDetails.url;
+
+      const multiPartApi = this.$axios.create({
+        headers: {
+          'Content-Type': 'multipart/form-data; boundary=--XXX--;',
+        },
+      });
+      const formData = new FormData();
+      formData.append('imageFile', this.imageFile, this.imageFile.name);
+      formData.append('imageDetails', JSON.stringify(newImageDetails));
+      const newImageFile = (await multiPartApi.post('/image', formData)).data;
+      this.file.push(newImageFile);
+    },
+    async editImageFile(newImageDetails) {
+      await this.$axios.post(`/image/${newImageDetails.id}`, {
+        imageDetails: newImageDetails,
+      });
     },
   },
 };

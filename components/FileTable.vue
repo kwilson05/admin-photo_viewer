@@ -4,7 +4,7 @@
       <tr>
         <th class="tableheader">
           <input
-            @change="handleSelectAll"
+            @click="handleSelectAll"
             v-model="selectedAllRows"
             type="checkbox"
             id="selectAll"
