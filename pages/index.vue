@@ -20,8 +20,8 @@
       </div>
     </div>
     <CrudDialog
+      v-if="showDialog"
       ref="crudDialog"
-      v-show="hasNewImage"
       :imageDetails="imageDetails"
       @save="saveImage"
     />
@@ -39,15 +39,10 @@ export default {
       imageFile: {},
       files: [],
       saving: false,
+      showDialog: false,
     };
   },
   computed: {
-    hasNewImage() {
-      if (this.imageFile.name || this.imageDetails.description) {
-        return true;
-      }
-      return false;
-    },
     noFiles() {
       return this.files.length === 0;
     },
@@ -64,7 +59,7 @@ export default {
       }
       event.target.value = '';
       event.target.files = null;
-      this.$refs.crudDialog.$refs.imageDialog.showModal();
+      this.showDialog = true;
     },
     async saveImage(newImageDetails) {
       this.saving = true;
@@ -77,6 +72,7 @@ export default {
       this.imageDetails = {};
       this.imageFile = {};
       this.saving = false;
+      this.showDialog = false;
     },
     async createImageFile(newImageDetails) {
       // No longer need url property

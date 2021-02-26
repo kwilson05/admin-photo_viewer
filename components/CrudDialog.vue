@@ -3,7 +3,7 @@
     <img
       v-show="hasImage"
       class="Dialog-previewImage"
-      :src="newImageDetails.url"
+      :src="imageDetails.url"
     />
 
     <form>
@@ -62,20 +62,20 @@ import DateUtil from '../mixins/date';
 export default {
   props: ['imageDetails'],
   mixins: [DateUtil],
+
   data() {
     return {
       newImageDetails: {},
       savingPhoto: false,
     };
   },
-  watch: {
-    imageDetails() {
-      this.newImageDetails = this.imageDetails;
-    },
+  mounted() {
+    this.newImageDetails = { ...this.imageDetails };
+    this.$refs.imageDialog.showModal();
   },
   computed: {
     hasImage() {
-      return this.newImageDetails.url;
+      return this.imageDetails.url;
     },
   },
   methods: {
