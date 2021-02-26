@@ -8,6 +8,7 @@ export default {
       flatpickrConfig: {
         altFormat: 'M j, Y',
         altInput: true,
+        static: true,
         disableMobile: true,
       },
     };

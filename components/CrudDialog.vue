@@ -84,6 +84,7 @@ export default {
     },
     closeDialog() {
       this.$refs.imageDialog.close();
+      this.$emit('close');
     },
   },
 };

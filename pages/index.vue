@@ -24,6 +24,7 @@
       ref="crudDialog"
       :imageDetails="imageDetails"
       @save="saveImage"
+      @close="showDialog = false"
     />
   </div>
 </template>
@@ -62,7 +63,9 @@ export default {
       this.showDialog = true;
     },
     async saveImage(newImageDetails) {
+      this.showDialog = false;
       this.saving = true;
+
       if (this.imageFile.name) {
         await this.createImageFile(newImageDetails);
       } else {
@@ -72,7 +75,6 @@ export default {
       this.imageDetails = {};
       this.imageFile = {};
       this.saving = false;
-      this.showDialog = false;
     },
     async createImageFile(newImageDetails) {
       // No longer need url property
@@ -87,7 +89,7 @@ export default {
       formData.append('imageFile', this.imageFile, this.imageFile.name);
       formData.append('imageDetails', JSON.stringify(newImageDetails));
       const newImageFile = (await multiPartApi.post('/image', formData)).data;
-      this.file.push(newImageFile);
+      this.files.push(newImageFile);
     },
     async editImageFile(newImageDetails) {
       await this.$axios.post(`/image/${newImageDetails.id}`, {
