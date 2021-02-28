@@ -1,5 +1,8 @@
 <template>
   <div>
+    <aside v-show="saving" class="toast mb-4 mt-4">
+      <p class="text-center">Saving Image File......</p>
+    </aside>
     <div class="container">
       <div>
         <div>
@@ -14,15 +17,20 @@
             />
           </label>
         </div>
-        <h2 v-show="saving" class="mb-4 mt-4">Saving Image File......</h2>
+
         <h2 v-show="noFiles" class="mt-4">No files here..Please add some</h2>
-        <FileTable v-show="!noFiles" class="mt-4" :files="files" />
+        <FileTable
+          @view="viewImage"
+          v-show="!noFiles"
+          class="mt-4"
+          :files="files"
+        />
       </div>
     </div>
     <CrudDialog
       v-if="showDialog"
       ref="crudDialog"
-      :imageDetails="imageDetails"
+      :imageDetails="imageInView"
       @save="saveImage"
       @close="showDialog = false"
     />
@@ -36,8 +44,7 @@ export default {
   components: { FileTable, CrudDialog },
   data() {
     return {
-      imageDetails: {},
-      imageFile: {},
+      imageInView: {},
       files: [],
       saving: false,
       showDialog: false,
@@ -55,8 +62,8 @@ export default {
     newImageFile(event) {
       const imageFiles = event.target.files;
       if (imageFiles && imageFiles.length > 0) {
-        this.imageDetails.url = URL.createObjectURL(imageFiles[0]);
-        this.imageFile = imageFiles[0];
+        this.imageInView.url = URL.createObjectURL(imageFiles[0]);
+        this.imageInView.file = imageFiles[0];
       }
       event.target.value = '';
       event.target.files = null;
@@ -66,14 +73,13 @@ export default {
       this.showDialog = false;
       this.saving = true;
 
-      if (this.imageFile.name) {
+      if (this.imageInView.file) {
         await this.createImageFile(newImageDetails);
       } else {
         await this.editImageFile(newImageDetails);
       }
 
-      this.imageDetails = {};
-      this.imageFile = {};
+      this.imageInView = {};
       this.saving = false;
     },
     async createImageFile(newImageDetails) {
@@ -86,15 +92,31 @@ export default {
         },
       });
       const formData = new FormData();
-      formData.append('imageFile', this.imageFile, this.imageFile.name);
+      formData.append(
+        'imageFile',
+        this.imageInView.file,
+        this.imageInView.file.name
+      );
+
       formData.append('imageDetails', JSON.stringify(newImageDetails));
-      const newImageFile = (await multiPartApi.post('/image', formData)).data;
-      this.files.push(newImageFile);
+      const newImage = (await multiPartApi.post('/image', formData)).data;
+      this.files.push(newImage);
     },
-    async editImageFile(newImageDetails) {
-      await this.$axios.post(`/image/${newImageDetails.id}`, {
+    editImageFile(newImageDetails) {
+      this.$axios.post(`/image/${newImageDetails.id}`, {
         imageDetails: newImageDetails,
       });
+
+      for (const file of this.files) {
+        if (file.id === newImageDetails.id) {
+          Object.assign(file, newImageDetails);
+          return;
+        }
+      }
+    },
+    viewImage(image) {
+      this.imageInView = image;
+      this.showDialog = true;
     },
   },
 };
@@ -130,5 +152,17 @@ export default {
 
 .links {
   padding-top: 15px;
+}
+
+.toast {
+  position: absolute;
+  bottom: 0px;
+  right: 1px;
+  background: black;
+  color: white;
+  font-size: 16px;
+  border: 1px solid black;
+  border-radius: 4px;
+  width: 500px;
 }
 </style>

@@ -1,10 +1,10 @@
 <template>
   <table>
-    <thead>
-      <tr>
+    <thead ref="asdkfj">
+      <tr ref="kasozi">
         <th class="tableheader">
           <input
-            @click="handleSelectAll"
+            @click="selectAllRows"
             v-model="selectedAllRows"
             type="checkbox"
             id="selectAll"
@@ -20,40 +20,35 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="file in files" v-bind:key="file.filePath">
-        <td class="tabledata">
+      <tr class="tablerow" v-for="file in files" v-bind:key="file.filePath">
+        <td @click="selectRow(file.id)" class="tabledata">
           <input
+            :ref="'file-' + file.id"
             type="checkbox"
             data-file="image"
             :id="file.id"
             :name="file.id"
           />
         </td>
-        <td class="tabledata">
+        <td @click="selectRow(file.id)" class="tabledata">
           {{ file.title }}
         </td>
 
-        <td class="tabledata">
+        <td @click="selectRow(file.id)" class="tabledata">
           {{ file.filePath }}
         </td>
-        <td class="tabledata">
+        <td @click="selectRow(file.id)" class="tabledata">
           {{ file.description }}
         </td>
-        <td class="tabledata">
+        <td @click="selectRow(file.id)" class="tabledata">
           {{ formatDate(file.photoTakenDate) }}
         </td>
-        <td class="tabledata">
+        <td @click="selectRow(file.id)" class="tabledata">
           {{ formatDate(file.createdDate) }}
         </td>
 
-        <td class="tabledata">
-          <nuxt-link
-            tag="img"
-            :to="{ name: 'image-id', params: { id: file.id } }"
-            class="kebab"
-            src="/noun_Kebab Menu_659813.svg"
-          >
-          </nuxt-link>
+        <td @click="view(file)" class="tabledata">
+          <img class="kebab" src="/noun_Kebab Menu_659813.svg" />
         </td>
       </tr>
     </tbody>
@@ -86,12 +81,29 @@ export default {
     };
   },
   methods: {
-    handleSelectAll() {
-      const checkboxes = document.querySelectorAll('[data-file]');
-
-      for (const checkbox of checkboxes) {
-        checkbox.checked = this.selectedAllRows;
+    selectAllRows() {
+      this.selectedAllRows = !this.selectedAllRows;
+      const action = this.selectedAllRows ? 'selected' : 'deselected';
+      this.$emit(action, 'all');
+      for (const refElement in this.$refs) {
+        if (
+          Array.isArray(this.$refs[refElement]) &&
+          'checked' in this.$refs[refElement][0]
+        ) {
+          this.$refs[refElement][0].checked = this.selectedAllRows;
+        }
       }
+    },
+    selectRow(fileId) {
+      const rowKey = `file-${fileId}`;
+      const selected = this.$refs[rowKey][0].checked;
+
+      const action = !selected ? 'selected' : 'deselected';
+      this.$emit(action, fileId);
+      this.$refs[rowKey][0].checked = !selected;
+    },
+    view(file) {
+      this.$emit('view', file);
     },
   },
 };
@@ -111,22 +123,26 @@ table {
   user-select: none;
   border-radius: 4px;
 }
+tr.tablerow:hover {
+  background-color: #f4f4f4;
+}
 
 th.tableheader {
   cursor: pointer;
   letter-spacing: 2px;
-  border: 2px solid#EBECF3;
+  border: solid black;
+  border-width: 0px 0px 1px 0px;
   padding: 10px;
   background-color: #f4f4f4;
-  border: none;
   font-weight: bold;
   font-size: 90%;
   user-select: none;
 }
 
 td.tabledata {
+  cursor: pointer;
   letter-spacing: 1px;
-  border: 2px solid#EBECF3;
+
   padding: 5px;
   font-size: 90%;
   user-select: none;
