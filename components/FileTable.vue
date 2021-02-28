@@ -21,29 +21,30 @@
     </thead>
     <tbody>
       <tr class="tablerow" v-for="file in files" v-bind:key="file.filePath">
-        <td @click="selectRow(file.id)" class="tabledata">
+        <td class="tabledata">
           <input
             :ref="'file-' + file.id"
+            @change="selectRowByCheck(file)"
             type="checkbox"
             data-file="image"
             :id="file.id"
             :name="file.id"
           />
         </td>
-        <td @click="selectRow(file.id)" class="tabledata">
+        <td @click="selectRow(file)" class="tabledata">
           {{ file.title }}
         </td>
 
-        <td @click="selectRow(file.id)" class="tabledata">
+        <td @click="selectRow(file)" class="tabledata">
           {{ file.filePath }}
         </td>
-        <td @click="selectRow(file.id)" class="tabledata">
+        <td @click="selectRow(file)" class="tabledata">
           {{ file.description }}
         </td>
-        <td @click="selectRow(file.id)" class="tabledata">
+        <td @click="selectRow(file)" class="tabledata">
           {{ formatDate(file.photoTakenDate) }}
         </td>
-        <td @click="selectRow(file.id)" class="tabledata">
+        <td @click="selectRow(file)" class="tabledata">
           {{ formatDate(file.createdDate) }}
         </td>
 
@@ -94,13 +95,20 @@ export default {
         }
       }
     },
-    selectRow(fileId) {
-      const rowKey = `file-${fileId}`;
+    selectRow(file) {
+      const rowKey = `file-${file.id}`;
       const selected = this.$refs[rowKey][0].checked;
 
       const action = !selected ? 'selected' : 'deselected';
-      this.$emit(action, fileId);
+      this.$emit(action, file);
       this.$refs[rowKey][0].checked = !selected;
+    },
+    selectRowByCheck(file) {
+      const rowKey = `file-${file.id}`;
+      const selected = this.$refs[rowKey][0].checked;
+
+      const action = selected ? 'selected' : 'deselected';
+      this.$emit(action, file);
     },
     view(file) {
       this.$emit('view', file);

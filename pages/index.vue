@@ -20,6 +20,8 @@
 
         <h2 v-show="noFiles" class="mt-4">No files here..Please add some</h2>
         <FileTable
+          @selected="selectFile"
+          @deselected="deselectFile"
           @view="viewImage"
           v-show="!noFiles"
           class="mt-4"
@@ -46,6 +48,7 @@ export default {
     return {
       imageInView: {},
       files: [],
+      selectedFiles: [],
       saving: false,
       showDialog: false,
     };
@@ -117,6 +120,25 @@ export default {
     viewImage(image) {
       this.imageInView = image;
       this.showDialog = true;
+    },
+    selectFile(file) {
+      if (file === 'all') {
+        this.selectedFiles = [];
+        this.selectedFiles.push(...this.files);
+      } else {
+        this.selectedFiles.push(file);
+      }
+    },
+    deselectFile(deselectedFile) {
+      if (deselectedFile === 'all') {
+        this.selectedFiles = [];
+      } else {
+        this.selectedFiles = this.selectedFiles.filter((file) => {
+          if (deselectedFile.id !== file.id) {
+            return file;
+          }
+        });
+      }
     },
   },
 };
