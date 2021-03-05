@@ -68,10 +68,19 @@ em {
   padding: 0px 10px;
   background-color: turquoise;
   border-radius: 8px;
-  width: 100px;
+  width: 150px;
   display: block;
   color: whitesmoke;
   cursor: pointer;
+}
+.btn[disabled="disabled"]{
+  background-color: rgba(0, 255, 255, 0.5);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn[disabled="disabled"]:hover {
+  background-color: rgba(0, 255, 255, 0.5);
 }
 
 .btn-secondary{

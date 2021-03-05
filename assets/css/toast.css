@@ -1,0 +1,15 @@
+.toast-message {
+  opacity: 0;
+  animation: toastMessage 2s 1;
+}
+@keyframes toastMessage {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

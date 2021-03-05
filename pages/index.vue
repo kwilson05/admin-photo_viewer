@@ -3,9 +3,12 @@
     <aside v-show="saving" class="toast mb-4 mt-4">
       <p class="text-center">Saving Image File......</p>
     </aside>
+    <aside v-show="hasResult" class="toast-message">
+      <p class="text-center">Showing result</p>
+    </aside>
     <div class="container">
       <div>
-        <div>
+        <div class="flex justify-around">
           <label class="btn" for="newphoto">
             Add Photos
             <input
@@ -16,6 +19,15 @@
               @change="newImageFile"
             />
           </label>
+          <div>
+            <button
+              @click="isDeletingFiles = true"
+              :disabled="!hasFilesSelected"
+              class="btn"
+            >
+              Delete
+            </button>
+          </div>
         </div>
 
         <h2 v-show="noFiles" class="mt-4">No files here..Please add some</h2>
@@ -36,14 +48,22 @@
       @save="saveImage"
       @close="showDialog = false"
     />
+
+    <ConfirmDialog
+      v-if="isDeletingFiles"
+      @yes="deleteSelectedFiles"
+      @no="isDeletingFiles = false"
+    />
   </div>
 </template>
 
 <script>
 import FileTable from '~/components/FileTable.vue';
 import CrudDialog from '~/components/CrudDialog.vue';
+import ConfirmDialog from '~/components/ConfirmDialog.vue';
+// import { deleteImages } from '~/service/ImageService';
 export default {
-  components: { FileTable, CrudDialog },
+  components: { FileTable, CrudDialog, ConfirmDialog },
   data() {
     return {
       imageInView: {},
@@ -51,17 +71,29 @@ export default {
       selectedFiles: [],
       saving: false,
       showDialog: false,
+      isDeletingFiles: false,
+      deleteFilesResult: {},
+      hasResult: false,
     };
   },
   computed: {
     noFiles() {
       return this.files.length === 0;
     },
+    hasFilesSelected() {
+      return this.selectedFiles.length > 0;
+    },
   },
   async created() {
     this.files.push(...(await this.$axios.get('/image')).data);
   },
   methods: {
+    deleteSelectedFiles() {
+      this.isDeletingFiles = false;
+      this.hasResult = true;
+
+      // let response = (await deleteImages(this.selectedFiles)).data;
+    },
     newImageFile(event) {
       const imageFiles = event.target.files;
       if (imageFiles && imageFiles.length > 0) {
