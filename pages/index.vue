@@ -68,7 +68,7 @@
 import FileTable from '~/components/FileTable.vue';
 import CrudDialog from '~/components/CrudDialog.vue';
 import ConfirmDialog from '~/components/ConfirmDialog.vue';
-import { deleteImages } from '~/service/ImageService';
+import { deleteImages, createImage, editImage } from '~/service/ImageService';
 import ConfirmToast from '~/components/ConfirmToast';
 import MessageToast from '~/components/MessageToast';
 
@@ -143,7 +143,6 @@ export default {
     async saveImage(newImageDetails) {
       this.showSaveDialog = false;
       this.saving = true;
-
       if (this.imageInView.file) {
         await this.createImageFile(newImageDetails);
       } else {
@@ -156,27 +155,17 @@ export default {
     async createImageFile(newImageDetails) {
       // No longer need url property
       delete newImageDetails.url;
-
-      const multiPartApi = this.$axios.create({
-        headers: {
-          'Content-Type': 'multipart/form-data; boundary=--XXX--;',
-        },
-      });
-      const formData = new FormData();
-      formData.append(
-        'imageFile',
-        this.imageInView.file,
-        this.imageInView.file.name
-      );
-
-      formData.append('imageDetails', JSON.stringify(newImageDetails));
-      const newImage = (await multiPartApi.post('/image', formData)).data;
-      this.files.push(newImage);
+      try {
+        const newImage = (
+          await createImage(this.imageInView.file, newImageDetails)
+        ).data;
+        this.files.push(newImage);
+      } catch (err) {
+        console.log(err);
+      }
     },
     editImageFile(newImageDetails) {
-      this.$axios.post(`/image/${newImageDetails.id}`, {
-        imageDetails: newImageDetails,
-      });
+      editImage(newImageDetails);
 
       for (const file of this.files) {
         if (file.id === newImageDetails.id) {

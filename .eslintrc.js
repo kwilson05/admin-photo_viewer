@@ -17,6 +17,9 @@ module.exports = {
   plugins: ['prettier'],
   // add your custom rules here
   rules: {
-    "no-debugger":0,
+    'no-debugger': 0,
   },
-}
+  parserOptions: {
+    parser: 'babel-eslint',
+  },
+};

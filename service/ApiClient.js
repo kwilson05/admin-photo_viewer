@@ -24,4 +24,8 @@ reqMethods.forEach((method) => {
   };
 });
 
+service.create = function () {
+  return client.create.apply(null, arguments);
+};
+
 export default service;
