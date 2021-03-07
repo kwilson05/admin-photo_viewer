@@ -120,10 +120,14 @@ export default {
       const selectedFilesIds = this.selectedFiles.map((selectedFile) => {
         return selectedFile.id;
       });
-      this.deletedFiles = (await deleteImages(selectedFilesIds)).data;
-      this.files = this.files.filter((file) => {
-        return this.deletedFiles.sucess.includes(file.id);
-      });
+
+      try {
+        this.deletedFiles = (await deleteImages(selectedFilesIds)).data;
+        this.files = this.files.filter((file) => {
+          return !this.deletedFiles.sucess.includes(file.id);
+        });
+      } catch (err) {}
+
       this.deleting = false;
     },
     newImageFile(event) {

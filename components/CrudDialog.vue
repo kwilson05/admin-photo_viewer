@@ -28,7 +28,7 @@
             class="Dialog-field"
           />
         </div>
-        <div class="Dialog-fieldContainer">
+        <div class="Dialog-fieldContainer mb-5">
           <label for="photoTakenDate" class="Dialog-fieldLabel"
             >Photo Shot Date</label
           >
@@ -94,6 +94,7 @@ export default {
   height: 700px;
   width: 700px;
   position: absolute;
+  top: 20%;
   margin: 0 auto;
   padding: 16px;
   color: black;
