@@ -1,11 +1,18 @@
 <template>
   <div>
     <aside v-show="saving" class="toast mb-4 mt-4">
-      <p class="text-center">Saving Image File......</p>
+      <p class="text-center">Saving image......</p>
     </aside>
-    <aside v-show="hasResult" class="toast-message">
-      <p class="text-center">Showing result</p>
-    </aside>
+
+    <ConfirmToast
+      v-if="hasDeletedFiles"
+      @close="deletedFiles = {}"
+      :message="deletedFilesMessage"
+    >
+    </ConfirmToast>
+    <MessageToast v-if="deleting" :message="'Deleting selected images......'">
+    </MessageToast>
+
     <div class="container">
       <div>
         <div class="flex justify-around">
@@ -21,7 +28,7 @@
           </label>
           <div>
             <button
-              @click="isDeletingFiles = true"
+              @click="showDeleteDialog = true"
               :disabled="!hasFilesSelected"
               class="btn"
             >
@@ -42,17 +49,17 @@
       </div>
     </div>
     <CrudDialog
-      v-if="showDialog"
+      v-if="showSaveDialog"
       ref="crudDialog"
       :imageDetails="imageInView"
       @save="saveImage"
-      @close="showDialog = false"
+      @close="showSaveDialog = false"
     />
 
     <ConfirmDialog
-      v-if="isDeletingFiles"
+      v-if="showDeleteDialog"
       @yes="deleteSelectedFiles"
-      @no="isDeletingFiles = false"
+      @no="showDeleteDialog = false"
     />
   </div>
 </template>
@@ -61,19 +68,28 @@
 import FileTable from '~/components/FileTable.vue';
 import CrudDialog from '~/components/CrudDialog.vue';
 import ConfirmDialog from '~/components/ConfirmDialog.vue';
-// import { deleteImages } from '~/service/ImageService';
+import { deleteImages } from '~/service/ImageService';
+import ConfirmToast from '~/components/ConfirmToast';
+import MessageToast from '~/components/MessageToast';
+
 export default {
-  components: { FileTable, CrudDialog, ConfirmDialog },
+  components: {
+    FileTable,
+    CrudDialog,
+    ConfirmDialog,
+    ConfirmToast,
+    MessageToast,
+  },
   data() {
     return {
       imageInView: {},
       files: [],
       selectedFiles: [],
       saving: false,
-      showDialog: false,
-      isDeletingFiles: false,
-      deleteFilesResult: {},
-      hasResult: false,
+      showSaveDialog: false,
+      showDeleteDialog: false,
+      deleting: false,
+      deletedFiles: {},
     };
   },
   computed: {
@@ -83,16 +99,32 @@ export default {
     hasFilesSelected() {
       return this.selectedFiles.length > 0;
     },
+    hasDeletedFiles() {
+      return !!this.deletedFiles.sucess && !!this.deletedFiles.failed;
+    },
+    deletedFilesMessage() {
+      if (this.hasFilesSelected) {
+        return `Deleted ${this.deletedFiles.sucess.length} files and Failed to delete ${this.deletedFiles.failed.length}`;
+      } else {
+        return null;
+      }
+    },
   },
   async created() {
     this.files.push(...(await this.$axios.get('/image')).data);
   },
   methods: {
-    deleteSelectedFiles() {
-      this.isDeletingFiles = false;
-      this.hasResult = true;
-
-      // let response = (await deleteImages(this.selectedFiles)).data;
+    async deleteSelectedFiles() {
+      this.showDeleteDialog = false;
+      this.deleting = true;
+      const selectedFilesIds = this.selectedFiles.map((selectedFile) => {
+        return selectedFile.id;
+      });
+      this.deletedFiles = (await deleteImages(selectedFilesIds)).data;
+      this.files = this.files.filter((file) => {
+        return this.deletedFiles.sucess.includes(file.id);
+      });
+      this.deleting = false;
     },
     newImageFile(event) {
       const imageFiles = event.target.files;
@@ -102,10 +134,10 @@ export default {
       }
       event.target.value = '';
       event.target.files = null;
-      this.showDialog = true;
+      this.showSaveDialog = true;
     },
     async saveImage(newImageDetails) {
-      this.showDialog = false;
+      this.showSaveDialog = false;
       this.saving = true;
 
       if (this.imageInView.file) {
@@ -151,7 +183,7 @@ export default {
     },
     viewImage(image) {
       this.imageInView = image;
-      this.showDialog = true;
+      this.showSaveDialog = true;
     },
     selectFile(file) {
       if (file === 'all') {

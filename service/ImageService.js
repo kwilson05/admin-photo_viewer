@@ -1,4 +1,4 @@
-import axios from '@nuxtjs/axios';
-export const deleteImages = (images) => {
-  return axios.post('/image/batchDelete', images);
+import appClient from '~/service/ApiClient';
+export const deleteImages = (imageIds) => {
+  return appClient.post('/image/batchDelete', imageIds);
 };
